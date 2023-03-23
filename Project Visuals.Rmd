@@ -1,0 +1,122 @@
+---
+title: "Sports Analytics Project]"
+output: html_document
+date: '2022-11-15'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(ggplot2)
+library(dplyr)
+mlb_Team_Hitting <- read_csv("G:/My Drive/Sports Analytics/mlb_TeamHitting.csv")
+mlb_Team_Pitching <- read_csv("G:/My Drive/Sports Analytics/mlb_teamPitching.csv")
+mlb_Position_Rank <- read_csv("G:/My Drive/Sports Analytics/mlb_Wins_by_Position.csv")
+mlb_AL_Position_Performance <- read_csv("G:/My Drive/Sports Analytics/mlb_AL_Position_Performance.csv")
+```
+
+```{r}
+library(forcats)
+g_1 <- ggplot(data = mlb_AL_Position_Performance,
+              aes(y = mlb_AL_Position_Performance$`2B`,
+                  x = mlb_AL_Position_Performance$Rk,
+                  fill = mlb_AL_Position_Performance$`2B`))+
+  geom_bar(stat = "identity")+
+  theme_light()+
+  labs(y = "Team Name",
+       x = "Rank for 2B", 
+       title = "Team Rank for 2B Wins Above Average in AL")
+g_1
+
+g_3 <- ggplot(data = mlb_Position_Rank,
+              aes(y = mlb_Position_Rank$`2B`,
+                  x = mlb_Position_Rank$Rk,
+                  fill = mlb_Position_Rank$`2B`))+
+  geom_bar(stat = "identity")+
+  theme_light()+
+  labs(y = "Team Name",
+       x = "Rank for 2B", 
+       title = "Team Rank for 2B Wins Above Average in MLB")
+g_3
+
+```
+
+This shows that the Baltimore Orioles rank dead last in the AL for second basemen Wins Above Average. This shows that they must look for a better 2B in the future. They also rank 29th across all of the MLB in this category. 
+
+```{r}
+g_2 <- ggplot(data = mlb_AL_Position_Performance,
+              aes(y = mlb_AL_Position_Performance$RP,
+                  x = mlb_AL_Position_Performance$Rk,
+                  fill = mlb_AL_Position_Performance$RP))+
+  geom_bar(stat = "identity")+
+  theme_light()+
+  labs(y = "Team Name",
+       x = "Rank for Relief Pitchers", 
+       title = "Team Rank for Relief Pitchers Wins Above Average in AL")
+g_2
+
+g_4 <- ggplot(data = mlb_Position_Rank,
+              aes(y = mlb_Position_Rank$RP,
+                  x = mlb_Position_Rank$Rk,
+                  fill = mlb_Position_Rank$RP))+
+  geom_bar(stat = "identity")+
+  theme_light()+
+  labs(y = "Team Name",
+       x = "Rank for Relief Pitchers", 
+       title = "Team Rank for Relief Pitchers Wins Above Average in MLB")
+g_4
+```
+This shows that the Orioles rank first in Relief Pitching. This is by far the strongest asset that the team currently has. They have the number one ranked bullpen in the AL and number two in all of the MLB. They should try and retain as many players from their bullpen as possible. 
+
+3.
+```{r}
+# install.packages("GGally")
+library(GGally)
+g_5 <- ggplot(mlb_Team_Hitting, # Set dataset
+              aes(x = mlb_Team_Hitting$OPS, y = mlb_Team_Hitting$`R/G`)) + # Set wins v Expected wins
+  geom_point(color = "blue", alpha = 0.3) + # Set geom point
+  geom_smooth(method = "lm")+
+  geom_text(aes(label = ifelse(mlb_Team_Hitting$Tm == "Baltimore Orioles", as.character(mlb_Team_Hitting$Tm), " ")))
+  
+g_5
+```
+This visual shows that the Baltimore Orioles are a below average team when it comes to hitting. R/G stands for Runs per game, which the Orioles are below the average, and OPS stands for On-base plus slugging, where they are also just below average.
+
+```{r}
+g_6 <- ggplot(mlb_Team_Pitching, # Set dataset
+              aes(x = mlb_Team_Pitching$ERA, y = mlb_Team_Pitching$`RA/G`)) + # Set wins v Expected wins
+  geom_point(color = "blue", alpha = 0.3) + # Set geom point
+  geom_smooth(method = "lm")+
+  geom_text(aes(label = ifelse(mlb_Team_Pitching$Tm == "Baltimore Orioles", as.character(mlb_Team_Pitching$Tm), " ")))
+  
+g_6
+```
+This visual shows that even though the Orioles have one of the best bullpens in the MLB, they do not have a strong starting rotation. This is evident since they are right around average when comparing ERA and Runs per Game.
+
+```{r}
+g_7 <- ggplot(data = mlb_Position_Rank,
+              aes(y = mlb_Position_Rank$`OF (All)`,
+                  x = mlb_Position_Rank$Rk,
+                  fill = mlb_Position_Rank$`OF (All)`))+
+  geom_bar(stat = "identity")+
+  theme_light()+
+  labs(y = "Team Name",
+       x = "Rank for Outfield ", 
+       title = "Team Rank for all Three Outfield Positions Wins Above Average in MLB")
+g_7
+```
+This shows that the Orioles actually have an above average outfield as a whole. A reason for this is because they have all-star center fielder Cedric Mullins. With that being said, the Orioles need to improve their infield and starting pitching since these are their biggest weaknesses right now. 
+
+
+
+
+
+
+
+
+
+
+

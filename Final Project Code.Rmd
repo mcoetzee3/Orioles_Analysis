@@ -1,0 +1,71 @@
+---
+title: "Final Project Code"
+author: "Will Mercer, Jack Zyska, Aidan Tyrell, Brooks Coetzee, and Carter Putz"
+date: '2022-12-08'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Libraries
+```{r}
+library(tidyverse)
+library(xgboost)
+```
+
+## Load Data
+```{r}
+oriolesPitching <- read.csv("oriolesPitching.csv")
+potentialStarters <- read.csv("startingPitchers.csv")
+```
+
+## Train (Orioles pitchers from 2022) and Valid (Free agent starting pitchers)
+Stats from 2022 season
+```{r}
+train.df <- oriolesPitching[,-c(1,17,18,19)]
+valid.df <- potentialStarters[,-c(1,2,4,5,6,21,22,23)]
+```
+
+## XGBoost data
+```{r}
+# Create training matrix
+dtrain <- xgb.DMatrix(data = as.matrix(train.df), label = train.df$WAR)
+# Create test data
+dtest <- xgb.DMatrix(data = as.matrix(valid.df), label = valid.df$WAR)
+```
+
+## XGBoost model 
+60 rounds is when the train-rmse stops decreasing
+```{r}
+bst1 <- xgboost(data = dtrain, # Set training data
+                 
+                 nrounds = 60, # Set number of rounds
+                 
+                 verbose = 1, # 1 - Prints out fit
+                 print_every_n = 20) # Prints out result every 20th iteration
+```
+
+## Prediction values with XGBoost
+```{r}
+preds <- predict(bst1, dtest)
+```
+
+## Create column to add back names
+```{r}
+names <- c("Carlos Rodon", "Nathan Eovaldi", "Chris Bassit", "Corey Kluber", "Sean Manaea", "Wade Miley", "Rich Hill", "Ross Stripling", "Zack Grienke", "Michael Wacha", "Noah Syndergaard", "Trevor Williams", "Jordan Lyles", "Drew Smyly", "Erick Fedde", "Joe Ross", "Michael Lorenzen", "Ryan Yarbrough", "Michael Pineda", "Dylan Bundy", "Chris Archer", "Aaron Sanchez", "Zach Davies", "Chad Kuhl", "Dallas Keuchel", "Chase Anderson", "Mike Foltynewicz", "Kohei Arihara")
+```
+
+## Data frame with predicted vs actual
+```{r}
+projectedWAR.df <- data.frame("Name" = names, "Predicted WAR" = preds, "Actual WAR" = valid.df$WAR, "Difference" = preds - valid.df$WAR)
+```
+
+## Sort data frame by Predicted WAR
+```{r}
+projectedWARSorted.df <- projectedWAR.df %>%
+  arrange(desc(Predicted.WAR))
+```
+
+
